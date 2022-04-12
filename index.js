@@ -76,15 +76,23 @@ const generateId = () => {
 
 app.post('/api/persons', (request, response) => {
   const body = request.body;
+  // check if name is empty
   if (!body.name) {
     return response.status(400).json({
       error: 'Name is missing'
     })
   }
-
+  // check if number is empty
   if (!body.number) {
     return response.status(400).json({
       error: 'Number is missing'
+    })
+  }
+  // check if name is unique
+  const duplicateName = persons.find(person => person.name === body.name);
+  if (duplicateName) {
+    return response.status(400).json({
+      error: 'Name already exists in phonebook'
     })
   }
 
