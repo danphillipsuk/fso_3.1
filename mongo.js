@@ -14,19 +14,29 @@ const url =
 
 mongoose.connect(url)
 
-const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
-})
+  const personSchema = new mongoose.Schema({
+    name: String,
+    number: String,
+  })
 
-const Person = mongoose.model('Person', personSchema)
+  const Person = mongoose.model('Person', personSchema)
 
-const person = new Person({
-  name: personName,
-  number: personNumber,
-})
+  const person = new Person({
+    name: personName,
+    number: personNumber,
+  })
 
-person.save().then(result => {
-  console.log(`Added ${personName} number ${personNumber} to phonebook`)
-  mongoose.connection.close()
-})
+  if(!personName || !personNumber) {
+    Person.find({}).then(result => {
+      result.forEach(person => {
+        console.log(person)
+      })
+      mongoose.connection.close()
+    }) 
+  } else {
+    person.save().then(result => {
+      console.log(`Added ${personName} number ${personNumber} to phonebook`)
+      mongoose.connection.close()
+    })
+  }
+
