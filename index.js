@@ -4,8 +4,8 @@ const cors = require('cors')
 require('dotenv').config()
 const Person = require('./models/person');
 
-// const morgan = require('morgan');
-// const { response } = require('express');
+const morgan = require('morgan');
+const { response } = require('express');
 
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
@@ -15,11 +15,11 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
-// morgan.token('person', (request, response) => {
-//   return JSON.stringify(request.body)
-// })
+morgan.token('person', (request, response) => {
+  return JSON.stringify(request.body)
+})
 
-// app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'))
 
 app.use(express.json())
 
@@ -46,9 +46,9 @@ app.post('/api/persons', (request, response) => {
   })
 })
 
-// app.get('/', (request, response) => {
-//   response.send('<h1>Phonebook</h1>')
-// })
+app.get('/', (request, response) => {
+  response.send('<h1>Phonebook</h1>')
+})
 
 app.get('/api/persons', (request, response) => {
   Person.find({}).then(persons => {
@@ -69,19 +69,12 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 // get number of entries in persons
-// app.get('/info', (request, response) => {
-//   const num = persons.length;
-//   const date = new Date();
-//   response.send(`<p>Phonebook has info for ${num} people.</p><p>${date}`);
-// })
-
-// // delete a persons from persons
-// app.delete('/api/persons/:id', (request, response) => {
-//   const id = Number(request.params.id);
-//   persons = persons.filter(person => person.id !== id);
-//   console.log(response)
-//   response.status(204).end();
-// })
+app.get('/info', (request, response) => {
+  const num = Person.find()
+  num.count(function(err, count) {
+    response.json(`There are ${count} entries in the phonebook right now, ${new Date()}`)
+  })
+})
  
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
@@ -91,6 +84,19 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person.findByIdAndUpdate(request.params.id, person, {new: true })
+    .then(updatedPerson => {
+      response.json(updatedPerson)
+    })
+    .catch(error => next(error))
+})
 
 // Middleware for unsupported routes
 const unknownEndpoint = (request, response) => {
