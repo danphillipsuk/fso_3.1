@@ -24,4 +24,25 @@ GET http://localhost:3001/info
 
 ###
 
-GET http://localhost:3001/api/persons/62614b6ace1fec36f2793
+// Get accurate id
+GET http://localhost:3001/api/persons/625fd4e7ba76725d2a12e0b2
+
+###
+
+// Get wrong id, but correct format
+GET http://localhost:3001/api/persons/625fd4e7ba76725d2a12e0b4
+
+###
+
+// Get wrong id with wrong format
+GET http://localhost:3001/api/persons/lololol
+
+### 
+
+POST http://localhost:3001/api/persons/ HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "AB",
+  "number": "012345 3456"
+}
